@@ -56,7 +56,7 @@ def write_graph_lagging(all_branches,filename):
             continue
 
         if bran.ows_commits and bran.missing_commits:
-            NEED TO WRITE GET LONGEST UNMSYNCED FRO MASTER
+            #NEED TO WRITE GET LONGEST UNMSYNCED FROM MASTER
             diff = bran.get_longest_unmerged_to_master(repo)
             fileline = bran.name.ljust(longest_name,"-") + " " +  unicode(diff.days)
             file1.write(fileline + "\n")
