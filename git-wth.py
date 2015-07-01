@@ -267,3 +267,4 @@ for bran in all_branches:
 #print ">>> ", since , "\t", committed
 
 repo.head.ref = repo.heads[masterbranch]
+os.system("python termgraph.py lagging.dat")
