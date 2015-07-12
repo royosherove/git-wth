@@ -26,6 +26,7 @@ class BranchDetails:
     ows_commits = False
     unmerged_to_master = ""
     longest_unmereged=-1
+    chil_of_master = False
     def __INIT__(self):
         self.longest_unmereged=-1
 
@@ -261,7 +262,14 @@ print "Fully sync branches with master"
 print "(possibly stale or unneeded)"
 print "---------------"
 for bran in all_branches:
-    if (not bran.ows_commits) and (not bran.missing_commits):
+    if (not bran.ows_commits) and (not bran.missing_commits) and bran.chil_of_master:
+      print bran.name
+print 
+print "---------------"
+print "Branches Unrelated to master"
+print "---------------"
+for bran in all_branches:
+    if not bran.chil_of_master:
       print bran.name
 #since  = timesince( datetime.fromtimestamp(item[0])) 
 #print ">>> ", since , "\t", committed
