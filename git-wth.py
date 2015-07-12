@@ -163,6 +163,7 @@ for line in unmeregd.splitlines():
   branch_item = BranchDetails()
   branch_item.name = thename
   branch_item.latest_master_commit= latest_master_commit
+  branch_item.found_merge_base = False
 
   all_branches.append(branch_item)
   print
@@ -174,19 +175,31 @@ for line in unmeregd.splitlines():
       continue
 
   try:
+      #print 8
       branch_item.latest_branch_commit = repo.git.merge_base(  branch_item.name, branch_item.name)
+      #print "9"
       branch_item.latest_branch_commit_date = get_commit_date(branch_item.latest_branch_commit)
 
+      #print "10"
       branch_item.common_merge_base = repo.git.merge_base(  masterbranch,branch_item.name)
+      #print "20"
       branch_item.common_merge_base_date= get_commit_date(branch_item.common_merge_base)
 
+      #print "30"
       branch_item.master_and_common_base_base = repo.git.merge_base(  masterbranch,branch_item.common_merge_base )
+      #print "40"
       branch_item.master_and_common_base_base_date= get_commit_date(branch_item.master_and_common_base_base)
 
+      #print "50"
       branch_item.unmerged_to_master = repo.git.rev_list(masterbranch + "..." + branch_item.name, "--right-only",  "--abbrev-commit", "--date=relative", "--reverse")
+      #print "60"
       branch_item.unmerged_to_branch = repo.git.rev_list(masterbranch + "..." + branch_item.name, "--left-only", "--abbrev-commit", "--date=relative", "--reverse")
+
+      branch_item.found_merge_base = True
   except:
       print "ERROR looking up some data. moving to next branch"
+      #e = sys.exc_info()[0]
+      #print vars(e)
       #raise
       continue
 
@@ -230,7 +243,7 @@ for line in unmeregd.splitlines():
 
 print 
 print "---------------"
-print "Branches that owe commits and lag behind master:"
+print "Branches that are ahead and behind master at the same time:"
 print "(possibly feature branches)"
 print "---------------"
 all_branches = sorted(all_branches,key=lambda item: item.get_longest_unmerged_to_master(repo), reverse=True)
@@ -239,7 +252,7 @@ write_graph_lagging(all_branches,"lagging.dat")
 
 print 
 print "---------------"
-print "Branches that only owe commits: "
+print "Branches that only owe commits (ahead of master): "
 print "(possibly feature branches)"
 print "---------------"
 for bran in all_branches:
@@ -247,7 +260,7 @@ for bran in all_branches:
 
 print 
 print "---------------"
-print "Branches that are missing commits from master with nothing to contribute:"
+print "Branches that are missing commits from master with nothing to contribute (behind master):"
 print "(possibly release branches or feature branches with no new commits yet)"
 print "---------------"
 for bran in all_branches:
@@ -255,6 +268,7 @@ for bran in all_branches:
       print bran.name
       #print "Missing from master:"
       #print ">>",  bran.unmerged_to_branch
+
 
 print 
 print "---------------"
